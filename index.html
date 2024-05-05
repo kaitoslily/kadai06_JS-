@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<script src="js/jquery-2.1.3.min.js"></script>
+<link rel="stylesheet" href="css/sample.css">
+<title>ロケハン！星空観望会</title>
+</head>
+<header>
+    <h1><img src="img/profile.jpg" width="150">　　　　　ロケハン！星空観望会　　　　　<img src="img/profile.jpg" width="150"></h1>
+</header>
+<body>  
+<h2>担当グループ分けルーレット</h2>
+<div class="wrapper">
+    <div id="result" class="result"></div>
+    <ul id="number" class="number">
+    </ul>
+    <p>01番-05番　🔭望遠鏡でのご案内（月🌕、恒星🌌、惑星）</p>
+    <p>05番-08番　🌟星のおはなし会＠テント🎪</p>
+    <p>09番-10番　👀双眼鏡でのご案内</p>
+    <div class="wrapper-button">
+      <button id="button" class="button">START</button>
+    </div>             
+<audio id="sound-play" preload="auto">
+<!-- <source src="start.mp3" type="audio/mp3"> -->
+</audio>
+<audio id="sound-pause" preload="auto">
+<!-- <source src="pause.mp3" type="audio/mp3"> -->
+</audio>  
+<audio id="sound-play" preload="auto">
+<!-- <source src="start.mp3" type="audio/mp3"> -->
+</audio>
+<audio id="sound-pause" preload="auto">
+<!-- <source src="pause.mp3" type="audio/mp3"> -->
+</audio>
+</div>
+</main>  
+<style>html,body{height:100%;}body{padding:0;margin:0;}h1{padding:0;margin:0;font-size:100%;}</style>
+<!-- MAP[START] -->
+<h2>今回のロケハン：代々木公園</h2>
+<div id="myMap" style='width:120%;height:140%;float:center;'></div>
+<!-- MAP[END] -->
+<script src='https://www.bing.com/api/maps/mapcontrol?callback=GetMap&key=[ *** YOUR MY KEY *** ]' async defer></script>
+<script src="../js/BmapQuery.js"></script>
+<script>
+//****************************************************************************************
+// BingMaps&BmapQuery
+//****************************************************************************************
+//Init
+function GetMap(){
+    //------------------------------------------------------------------------
+    //1. Instance
+    //------------------------------------------------------------------------
+    const map = new Bmap("#myMap");
+
+    //------------------------------------------------------------------------
+    //2. Display Map
+    //   startMap(lat, lon, "MapType", Zoom[1~20]);
+    //   MapType:[load, aerial,canvasDark,canvasLight,birdseye,grayscale,streetside]
+    //--------------------------------------------------
+    map.startMap(35.6716486, 139.6952259, "load", 10);
+//ここから構成したいものを入れていく
+
+  //----------------------------------------------------
+    //3. Add Pushpin-Center
+    // pin(lat, lon, "color", [drag:true|false], [click:true|false], [hover:true|false], [visible:true|false]);
+    //----------------------------------------------------
+    const lat = map.getLat(); //Get MapCenter latitude
+    const lon = map.getLon(); //Get MapCenter longitude
+    let pin = map.pin(lat, lon, "#ff0000"); //Pushpin
+    //----------------------------------------------------
+
+    //１４. MapChangeView
+    //   ex1)changeMap(lat, lon, "MapType");
+    //   ex2)changeMap(lat, lon, "MapType", Zoom[1~20]);
+    //   "MapType":[load,aerial,canvasDark,canvasLight,birdseye,grayscale,streetside]
+    //----------------------------------------------------
+    // ex1) after 3 seconds.
+    setTimeout(function(){
+        map.changeMap(35.6716486, 139.6952259, "birdseye");
+    },3000);
+
+    // ex2) after 6 seconds.
+    setTimeout(function(){
+        map.changeMap(35.6716486, 139.6952259, "canvasDark", 17);
+    },6000);
+
+}
+</script>
+<style>
+    #view{
+        padding: 10px;
+        border: 4px solid #6f28bb;
+        width: 50%px;
+        background-color: aliceblue;
+        height:500px;
+        overflow: auto;
+    }
+    img{
+        width:50px;
+    }
+    #view>div{
+        border-bottom: 1px dotted #3838ab;
+        font-size:medium;
+    }
+    .bold{
+        font-weight: bold;
+    }
+    h2{padding:0;margin:0;font-size:100%;
+    }
+</style>
+<p>
+<div>
+    <h2>
+       <span id="area"></span> 天気5日間！
+    </h2>
+    <div id="view">
+
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script>
+    //＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+    //MAP表示処理
+    //＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+    const key   = "3b62cabb9797c33876e4321f02b19d13";  //***自分のKEYを！！！！！！！！！！！！！！！***
+    const lat   = "35.6716486";   //代々木公園の緯度
+    const lon   = "139.6952259";  //代々木公園のの軽度
+    const icon  = "http://openweathermap.org/img/wn/"; //ICONにアクセスするURL
+
+    //＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+    //OpenWeatherAPI（天気情報を取得）5DAY/3hour
+    //＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+    const url = 'https://api.openweathermap.org/data/2.5/forecast?lat='+lat+'&lon='+lon+'&appid='+key+'&lang=ja';
+//    通信が成功したらし下の中が実行される。URLは設定どこにいくのか？
+    $.ajax({
+        url:url, //どこの設定から拾うのか
+        type: 'get', //通信の方法は？get /post
+        cache: false, 
+        dataType: 'json'
+    }).done(function(data){
+        // console.log(data.list[0].dt_txt);//オブジェクト変数を確認 console object の０番のdt_txtを右クリックしてコピーして貼り付け
+        console.log(data);
+        
+        let html="";
+        for(let i=0; i<data.list.length; i++){
+// 日付だけ表示させる
+            html+= `
+            <div>
+                <div>日時：${data.list[i].dt_txt}</div> 
+                <div>風速：${data.list[i].wind.speed}</div> 
+                <div>空模様：${data.list[i].weather[0].description}</div>  
+                <div>降水確率(%)：${data.list[i].pop*100}</div>  
+                <div><img src= "${icon+data.list[0].weather[0].icon}@2x.png"></div>  
+            </div>
+             `;
+        }
+
+// 上で作成したHTML埋め込む
+        $("#view").append(html);
+// 場所
+        $("#area").html(data.city.name);
+            
+    });
+
+// yoyogi koen 35.672254, 139.694552
+</script>
+<script>
+$(function(){
+  "use strict";
+  var
+    max = 10,
+    bingo = [],
+    status = true,
+    roulette,
+    random,
+    number,
+    result,
+    $number = $("#number"),
+    $result = $("#result"),
+    $sound_play = $("#sound-play"),
+    $sound_pause = $("#sound-pause");
+    for(var i = 1; i <= max; i++) {
+    bingo.push(i);
+    $number.append($("<li>").text(("0" + i).slice(-2)));
+  }
+
+  $("#button").on("click", function(){
+    if(status) {
+      status = false;
+      $(this).text("STOP");
+      $sound_play.trigger("play");
+      $sound_pause.trigger("pause");
+      $sound_pause[0].currentTime = 0;
+
+      roulette = setInterval(function(){
+        random = Math.floor(Math.random() * bingo.length);
+        number = bingo[random];
+        $result.text(number);
+      }, 10);
+    } else {
+      status = true;
+      $(this).text("START");
+      $sound_pause.trigger("play");
+      $sound_play.trigger("pause");
+      $sound_play[0].currentTime = 0;
+
+      clearInterval(roulette);
+
+      result = bingo[random];
+      bingo.splice(random, 1);
+      $result.text(result);
+      $number.find("li").eq(parseInt(result, 10) - 1).addClass("hit");
+    }
+  });
+});
+</script>
+</body>
+</html>
